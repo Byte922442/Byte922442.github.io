@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>КЛИК! - Полная Версия</title>
+  <title>КЛИК! - ANTICHEAT 15 CPS</title>
   <style>
     :root { 
       --red: #ff0000; --gold: #ffcc00; --blue: #00d4ff; 
@@ -13,15 +13,16 @@
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
     body { background-position: center !important; background-size: cover !important; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; transition: background 0.8s ease; }
 
-    /* Бан-экран */
-    #ban-screen { position: fixed; inset: 0; z-index: 10000; display: none; background: #000 url('Gemini_Generated_Image_wzoa41wzoa41wzoa.jpg') no-repeat center; background-size: contain; flex-direction: column; justify-content: flex-end; align-items: center; }
+    /* Бан-экран с твоим фото */
+    #ban-screen { 
+      position: fixed; inset: 0; z-index: 10000; display: none; 
+      background: #000 url('Gemini_Generated_Image_wzoa41wzoa41wzoa.jpg') no-repeat center; 
+      background-size: cover; 
+    }
 
     .main-screen { text-align: center; z-index: 10; width: 100%; }
-    .blur { filter: blur(25px) brightness(0.2); pointer-events: none; }
-
     .stats { position: fixed; top: 20px; left: 20px; z-index: 100; padding: 15px; border-radius: 18px; background: var(--glass); border: 1px solid var(--border); }
     .shark-val { color: var(--blue); font-weight: bold; font-size: 18px; margin-top: 5px; }
-    .multiplier-tag { background: var(--blue); color: #000; padding: 2px 8px; border-radius: 6px; font-size: 12px; margin-left: 5px; font-weight: 900; }
 
     /* Магазин */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 200; opacity: 0; transition: 0.4s; }
@@ -43,39 +44,34 @@
 </head>
 <body>
 
-<div id="ban-screen">
-    <div style="background: rgba(0,0,0,0.9); padding: 30px; width: 100%; text-align: center; color: red;">
-        <h1 style="margin:0;">ТЫ ЗАБАНЕН, БРО</h1>
-    </div>
-</div>
+<div id="ban-screen"></div>
 
 <div class="stats">
   <div id="bal" style="font-size:28px; font-weight:900; color:var(--gold);">0</div>
-  <div style="font-size:12px; opacity:0.8;">ДОХОД <span id="mult-view" class="multiplier-tag">x1</span></div>
+  <div style="font-size:12px; opacity:0.8;">ДОХОД <span id="mult-view" style="background:var(--blue); color:#000; padding:2px 6px; border-radius:4px;">x1</span></div>
   <div class="shark-val">🦈 <span id="sharks">0</span></div>
 </div>
 
 <button class="btn-ui" style="position:fixed; top:20px; right:20px; z-index:100;" onclick="toggleShop(true)">MARKET</button>
-<button class="btn-ui" style="position:fixed; bottom:20px; left:20px; z-index:100; border-color: var(--blue);" onclick="startMiniGame()">MINI GAMES</button>
+<button class="btn-ui" style="position:fixed; bottom:20px; left:20px; z-index:100;" onclick="startMiniGame()">MINI GAMES</button>
 
 <div class="modal-overlay" id="modal" onclick="if(event.target == this) toggleShop(false)">
   <div class="shop-window">
     <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x: auto;">
         <button class="btn-ui" onclick="renderShop('sounds')">ЗВУКИ</button>
         <button class="btn-ui" onclick="renderShop('wallpapers')">ОБОИ</button>
-        <button class="btn-ui" style="color:var(--blue)" onclick="renderShop('buffs')">БАФФЫ</button>
+        <button class="btn-ui" onclick="renderShop('buffs')">БАФФЫ</button>
     </div>
     <div id="shop-content" class="grid"></div>
   </div>
 </div>
 
 <div id="game-container">
-    <div style="position:absolute; top:20px; width:100%; text-align:center; color:var(--blue); font-size:24px; font-weight:900;">СЧЕТ: <span id="game-score">0</span></div>
     <canvas id="game-canvas"></canvas>
 </div>
 
 <div class="main-screen" id="main">
-  <h1 style="font-size:120px; margin-bottom:30px; letter-spacing:-8px; font-style: italic;">КЛИК!</h1>
+  <h1 style="font-size:80px; margin-bottom:30px; font-style: italic;">КЛИК!</h1>
   <button id="crushBtn">CRUSH</button>
 </div>
 
@@ -106,34 +102,28 @@
       { id: "w8", n: "РЫБАК", p: 100000, f: "photo_9_2026-02-01_23-17-09.jpg" },
       { id: "w9", n: "МАЙКА", p: 250000, f: "photo_8_2026-02-01_23-17-09.jpg" },
       { id: "w10", n: "СПОРТ", p: 500000, f: "photo_6_2026-02-01_23-17-09.jpg" },
-      { id: "w11", n: "УШАНКА", p: 1000000, f: "photo_5_2026-02-01_23-17-09.jpg" },
-      { id: "w12", n: "СКЛАД", p: 2500000, f: "image_24be59.png" },
-      { id: "w13", n: "ЭЛИТА 1", p: 7000000, f: "photo_14_2026-02-01_23-17-09.jpg" },
-      { id: "w14", n: "ЭЛИТА 2", p: 15000000, f: "photo_13_2026-02-01_23-17-09.jpg" },
-      { id: "w15", n: "БОСС", p: 50000000, f: "photo_7_2026-02-01_23-17-09.jpg" }
+      { id: "w11", n: "УШАНКА", p: 1000000, f: "photo_5_2026-02-01_23-17-09.jpg" }
     ],
     buffs: [
       { id: "b2", n: "BOOST x2", p: 500, mult: 2 },
-      { id: "b3", n: "BOOST x3", p: 1500, mult: 3 },
-      { id: "b4", n: "BOOST x4", p: 2500, mult: 4 },
-      { id: "b5", n: "BOOST x5", p: 4500, mult: 5 }
+      { id: "b5", n: "BOOST x5", p: 2000, mult: 5 }
     ]
   };
 
-  let state = JSON.parse(localStorage.getItem('sonal_final_pro')) || {
+  let state = JSON.parse(localStorage.getItem('game_save_v4')) || {
     balance: 0, sharks: 0, currentSound: "s1", currentWallpaper: "w1", currentMult: 1, inv: ["s1", "w1"], income: 10
   };
 
-  let clickTimes = [], clickAudio = null;
+  let clickTimes = [], lastAudio = null;
 
-  function save() { localStorage.setItem('sonal_final_pro', JSON.stringify(state)); }
+  function save() { localStorage.setItem('game_save_v4', JSON.stringify(state)); }
 
   function updateVisuals() {
     document.getElementById('bal').innerText = Math.floor(state.balance).toLocaleString();
     document.getElementById('sharks').innerText = state.sharks.toLocaleString();
     document.getElementById('mult-view').innerText = "x" + state.currentMult;
     const wp = FOLDERS.wallpapers.find(w => w.id === state.currentWallpaper);
-    document.body.style.backgroundImage = wp && wp.f ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${wp.f})` : "none";
+    document.body.style.backgroundImage = wp && wp.f ? `url(${wp.f})` : "none";
   }
 
   function toggleShop(open) {
@@ -146,17 +136,16 @@
     const container = document.getElementById('shop-content');
     container.innerHTML = '';
     FOLDERS[tab].forEach(item => {
-      const isBuff = tab === 'buffs';
       const owned = state.inv.includes(item.id);
-      const active = isBuff ? state.currentMult === item.mult : (tab === 'sounds' ? state.currentSound === item.id : state.currentWallpaper === item.id);
+      const active = (tab === 'sounds' ? state.currentSound === item.id : state.currentWallpaper === item.id);
       let preview = (tab === 'wallpapers' && item.f) ? `<div class="wp-preview" style="background-image:url(${item.f})"></div>` : '';
       
       const card = document.createElement('div');
       card.className = 'item-card';
-      card.innerHTML = `${preview}<b>${item.n}</b><br><small>${isBuff ? '🦈' : '💰'}</small>
-        <button class="buy-btn" style="background:${active ? 'var(--gold)' : (owned || (isBuff && state.currentMult >= item.mult) ? '#444' : 'var(--red)')}; color:${active?'#000':'#fff'}" 
+      card.innerHTML = `${preview}<b>${item.n}</b><br>
+        <button class="buy-btn" style="background:${active ? 'var(--gold)' : (owned ? '#444' : 'var(--red)')}" 
                 onclick="buy('${tab}','${item.id}')">
-          ${active ? 'АКТИВ' : ((owned || (isBuff && state.currentMult >= item.mult)) ? 'ВЫБРАТЬ' : item.p.toLocaleString())}
+          ${active ? 'ACTIVE' : (owned ? 'SELECT' : item.p.toLocaleString())}
         </button>`;
       container.appendChild(card);
     });
@@ -164,73 +153,44 @@
 
   window.buy = (tab, id) => {
     const item = FOLDERS[tab].find(x => x.id === id);
-    if (tab === 'buffs') {
-      if (state.sharks >= item.p) { state.sharks -= item.p; state.currentMult = item.mult; }
-    } else {
-      if (state.inv.includes(id)) {
+    if (state.inv.includes(id)) {
         if(tab === 'sounds') { state.currentSound = id; state.income = item.inc; }
         else state.currentWallpaper = id;
-      } else if (state.balance >= item.p) {
+    } else if (state.balance >= item.p) {
         state.balance -= item.p; state.inv.push(id);
         if(tab === 'sounds') { state.currentSound = id; state.income = item.inc; }
         else state.currentWallpaper = id;
-      }
     }
     save(); updateVisuals(); renderShop(tab);
   };
 
+  // КЛИКЕР С АНТИ-ЧИТОМ 15 CPS
   document.getElementById('crushBtn').onclick = () => {
-    // Вход в фуллскрин
-    document.documentElement.requestFullscreen?.().catch(() => {});
-    const now = Date.now(); clickTimes.push(now);
+    const now = Date.now();
+    clickTimes.push(now);
+
+    // Удаляем клики старее 1 секунды
     clickTimes = clickTimes.filter(t => t > now - 1000);
 
-    if (clickTimes.length > 22) {
-      localStorage.clear();
-      new Audio('Читы  бан кемперство  бан.mp3').play();
-      document.getElementById('ban-screen').style.display = 'flex';
+    // ПРОВЕРКА: Если больше 15 кликов за последнюю секунду
+    if (clickTimes.length > 15) {
+      localStorage.clear(); // Обнуление
+      new Audio('Читы бан кемперство бан.mp3').play(); // Звук бана
+      document.getElementById('ban-screen').style.display = 'block';
       document.getElementById('main').style.display = 'none';
-      setTimeout(() => location.reload(), 9000); return;
+      setTimeout(() => location.reload(), 9000); // Рестарт через 9 сек
+      return;
     }
 
+    // Обычный клик
     const sData = FOLDERS.sounds.find(s => s.id === state.currentSound);
-    if (!clickAudio || clickAudio.src.indexOf(sData.f) === -1) clickAudio = new Audio(sData.f);
-    clickAudio.currentTime = 0; clickAudio.play().catch(() => {});
+    const audio = new Audio(sData.f);
+    audio.play();
 
     state.balance += (state.income * state.currentMult);
     updateVisuals(); save();
   };
 
-  // МИНИ ИГРА
-  const canvas = document.getElementById('game-canvas'), ctx = canvas.getContext('2d');
-  let gameActive = false, bird, pipes, score, frame;
-
-  function startMiniGame() {
-    document.getElementById('game-container').style.display = 'block';
-    canvas.width = Math.min(450, window.innerWidth); canvas.height = window.innerHeight;
-    gameActive = true; score = 0; pipes = []; frame = 0;
-    bird = { x: 50, y: canvas.height/2, v: 0, g: 0.65 };
-    requestAnimationFrame(gameLoop);
-  }
-
-  function gameLoop() {
-    if(!gameActive) return;
-    ctx.clearRect(0,0,canvas.width, canvas.height);
-    bird.v += bird.g; bird.y += bird.v;
-    if(frame % 90 === 0) pipes.push({ x: canvas.width, y: Math.random()*(canvas.height-350)+175, gap: 180, passed: false });
-    pipes.forEach(p => {
-      p.x -= 4; ctx.fillStyle = "#00d4ff";
-      ctx.fillRect(p.x, 0, 60, p.y - p.gap/2); ctx.fillRect(p.x, p.y + p.gap/2, 60, canvas.height);
-      if(!p.passed && p.x < bird.x) { p.passed = true; score++; state.sharks += 100; save(); updateVisuals(); document.getElementById('game-score').innerText = score; }
-      if(bird.x+25 > p.x && bird.x < p.x+60 && (bird.y < p.y-p.gap/2 || bird.y+25 > p.y+p.gap/2)) gameActive = false;
-    });
-    ctx.fillStyle = "yellow"; ctx.fillRect(bird.x, bird.y, 25, 25);
-    if(bird.y > canvas.height || bird.y < 0) gameActive = false;
-    if(!gameActive) setTimeout(() => { document.getElementById('game-container').style.display = 'none'; }, 1000);
-    else { frame++; requestAnimationFrame(gameLoop); }
-  }
-
-  document.getElementById('game-container').onclick = () => { if(gameActive) bird.v = -10; };
   updateVisuals();
 </script>
 </body>
