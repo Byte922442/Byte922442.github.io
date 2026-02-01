@@ -5,68 +5,102 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>кликер sonal</title>
   <style>
-    :root { --red: #ff0000; --gold: #ffcc00; --bg: #020202; --win: #0a0a0a; --border: #1a1a1a; }
+    :root { --red: #ff0000; --gold: #ffcc00; --bg: #020202; }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; height: 100vh; background: var(--bg); color: #fff; font-family: 'Consolas', monospace; overflow: hidden; display: flex; justify-content: center; align-items: center; user-select: none; }
     
-    .main-screen { position: relative; z-index: 10; text-align: center; transition: filter 0.5s ease; width: 100%; }
-    .blur { filter: blur(15px) brightness(0.2); pointer-events: none; }
+    body { 
+      margin: 0; height: 100vh; background: var(--bg); color: #fff; 
+      font-family: 'Consolas', monospace; overflow: hidden; 
+      display: flex; justify-content: center; align-items: center;
+      user-select: none;
+    }
+    
+    .main-screen { position: relative; z-index: 10; text-align: center; transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; }
+    .blur { filter: blur(25px) brightness(0.3); pointer-events: none; }
 
-    /* ПЛАВНОЕ ПОЯВЛЕНИЕ МАРКЕТА */
+    /* МЯГКИЙ МАТОВЫЙ ОВЕРЛЕЙ */
     .modal-overlay { 
       position: fixed; inset: 0; 
-      background: rgba(0,0,0,0.7); 
-      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.2); 
+      backdrop-filter: blur(0px); /* Анимируется через JS */
       display: none; justify-content: center; align-items: center; 
-      z-index: 200; opacity: 0; transition: opacity 0.3s ease;
+      z-index: 200; opacity: 0; 
+      transition: opacity 0.5s ease, backdrop-filter 0.5s ease;
     }
-    .modal-overlay.active { display: flex; opacity: 1; }
+    .modal-overlay.active { display: flex; opacity: 1; backdrop-filter: blur(12px); }
     
+    /* ПЛАВНОЕ ПОЯВЛЕНИЕ В ЦЕНТР */
     .shop-window { 
-      width: 450px; max-width: 90%; max-height: 80vh; 
-      background: var(--win); border: 2px solid var(--border); 
+      width: 460px; max-width: 92%; max-height: 80vh; 
+      background: rgba(20, 20, 20, 0.7); /* Матовая прозрачность */
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
       padding: 30px; position: relative; overflow-y: auto;
-      transform: scale(0.7) translateY(50px);
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+      
+      /* Начальное состояние: меньше и ниже */
+      transform: scale(0.8) translateY(40px);
+      opacity: 0;
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
     }
-    .modal-overlay.active .shop-window { transform: scale(1) translateY(0); }
+    .modal-overlay.active .shop-window { 
+      transform: scale(1) translateY(0); 
+      opacity: 1;
+    }
 
-    h1 { font-size: 80px; font-weight: 900; margin-bottom: 20px; font-style: italic; text-transform: uppercase; }
-    #crushBtn { padding: 30px 80px; font-size: 40px; font-weight: 900; background: linear-gradient(180deg, var(--red), #500); color: #fff; border: none; border-radius: 10px; box-shadow: 0 10px 0 #300, 0 20px 40px rgba(255,0,0,0.3); cursor: pointer; transition: 0.1s; }
+    h1 { font-size: 80px; font-weight: 900; margin: 0 0 20px; font-style: italic; text-transform: uppercase; }
+    #crushBtn { 
+      padding: 30px 80px; font-size: 40px; font-weight: 900; 
+      background: linear-gradient(180deg, var(--red), #500); 
+      color: #fff; border: none; border-radius: 12px; 
+      box-shadow: 0 10px 0 #300, 0 25px 50px rgba(255,0,0,0.2); 
+      cursor: pointer; transition: 0.1s;
+    }
     #crushBtn:active { transform: translateY(8px); box-shadow: 0 2px 0 #300; }
     
-    .open-shop-btn { position: fixed; top: 20px; right: 20px; padding: 15px 25px; font-size: 16px; background: #111; border: 1px solid var(--border); color: var(--gold); font-weight: 900; cursor: pointer; z-index: 50; }
+    .open-shop-btn { 
+      position: fixed; top: 20px; right: 20px; 
+      padding: 15px 30px; font-size: 16px; 
+      background: rgba(255, 255, 255, 0.05); 
+      border: 1px solid rgba(255, 255, 255, 0.1); 
+      border-radius: 12px; color: var(--gold); 
+      font-weight: 900; z-index: 50; transition: 0.3s;
+    }
+
+    .stats { position: fixed; top: 25px; left: 25px; z-index: 100; }
+    .balance-val { font-size: 34px; font-weight: 900; letter-spacing: -1px; }
     
-    .stats { position: fixed; top: 20px; left: 20px; z-index: 100; }
-    .balance-val { font-size: 32px; font-weight: 900; }
-    
-    .item-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #000; border: 1px solid #111; margin-bottom: 10px; }
-    .buy-btn { padding: 8px 15px; font-size: 11px; font-weight: 900; background: #222; color: #fff; border: none; cursor: pointer; min-width: 100px; }
+    .item-row { 
+      display: flex; justify-content: space-between; align-items: center; 
+      padding: 18px; background: rgba(255, 255, 255, 0.03); 
+      border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.05); 
+      margin-bottom: 12px; 
+    }
+    .buy-btn { padding: 10px 18px; font-size: 12px; font-weight: 900; background: #222; color: #fff; border: none; border-radius: 8px; min-width: 100px; }
     .buy-btn.active-snd { background: var(--gold); color: #000; }
 
-    /* ЭКРАН БАНА */
-    #ban-screen { position: fixed; inset: 0; background: var(--red); color: white; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; text-align: center; font-family: sans-serif; }
+    #ban-screen { position: fixed; inset: 0; background: #000; color: var(--red); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
   </style>
 </head>
 <body>
 
 <div id="ban-screen">
-  <h1 style="font-size: 50px;">ANTI-CHEAT SYSTEM</h1>
-  <p style="font-size: 20px;">ОБНАРУЖЕН АВТОКЛИКЕР. АККАУНТ ОБНУЛЕН.</p>
+  <h1 style="font-size: 40px;">LIMIT EXCEEDED</h1>
+  <p>DETECTED UNNATURAL CLICK SPEED. DATA RESET.</p>
 </div>
 
 <div class="stats">
-  <div style="color:#555; font-size:10px">CASH_TOTAL:</div>
+  <div style="color:#555; font-size:10px; font-weight: bold;">CASH_TOTAL:</div>
   <div class="balance-val" id="bal">0</div>
-  <div id="income" style="font-size:12px; color:var(--gold); margin-top:5px;">ДОХОД: +10</div>
+  <div id="income" style="font-size:13px; color:var(--gold); margin-top:4px;">ДОХОД: +10</div>
 </div>
 
-<button class="open-shop-btn" onclick="toggleShop(true)">МАРКЕТ</button>
+<button class="open-shop-btn" onclick="toggleShop(true)">АРСЕНАЛ</button>
 
 <div class="modal-overlay" id="modal">
   <div class="shop-window">
-    <div style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:24px; color:#444;" onclick="toggleShop(false)">×</div>
-    <div style="color:var(--red); font-weight:900; margin-bottom:25px; border-bottom:1px solid #222; padding-bottom:10px;">АРСЕНАЛ SONAL</div>
+    <div style="position:absolute; top:20px; right:20px; cursor:pointer; font-size:24px; color:#555;" onclick="toggleShop(false)">×</div>
+    <div style="color:var(--red); font-weight:900; margin-bottom:25px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px; font-size:22px; letter-spacing: 2px;">MARKET_SONAL</div>
     <div id="shop-content"></div>
   </div>
 </div>
@@ -95,14 +129,11 @@
   ];
 
   let state = JSON.parse(localStorage.getItem('sonal_save')) || { balance: 0, current: "sounds.mp3", inv: ["sounds.mp3"], currentIncome: 10 };
-  
-  // ANTI-CHEAT VARIABLES
-  let clickCount = 0;
-  let lastCheck = Date.now();
+  let clickTimes = [];
+  let currentAudio = null;
 
   function saveGame() { localStorage.setItem('sonal_save', JSON.stringify(state)); }
 
-  let currentAudio = null;
   function play() {
     if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
     currentAudio = new Audio(state.current);
@@ -110,8 +141,15 @@
   }
 
   function toggleShop(open) {
-    if(open) { modal.classList.add('active'); main.classList.add('blur'); renderShop(); }
-    else { modal.classList.remove('active'); main.classList.remove('blur'); }
+    if(open) { 
+      modal.style.display = 'flex'; 
+      setTimeout(() => { modal.classList.add('active'); main.classList.add('blur'); }, 10);
+      renderShop(); 
+    } else { 
+      modal.classList.remove('active'); 
+      main.classList.remove('blur'); 
+      setTimeout(() => { modal.style.display = 'none'; }, 500);
+    }
   }
 
   function renderShop() {
@@ -120,8 +158,8 @@
       const owned = state.inv.includes(s.id), active = state.current === s.id;
       const row = document.createElement('div');
       row.className = 'item-row';
-      row.innerHTML = `<div><b>${s.n}</b><br><small>+${s.inc}</small></div>
-      <button class="buy-btn ${active?'active-snd':(owned?'':'')}" onclick="buy('${s.id}', ${s.p}, ${s.inc})">${active?'АКТИВ':(owned?'ВЫБРАТЬ':s.p)}</button>`;
+      row.innerHTML = `<div><div style="font-weight:900;">${s.n}</div><div style="font-size:11px;color:var(--gold);margin-top:2px;">+${s.inc} per click</div></div>
+      <button class="buy-btn ${active?'active-snd':''}" onclick="buy('${s.id}', ${s.p}, ${s.inc})">${active?'АКТИВ':(owned?'ВЫБРАТЬ':s.p.toLocaleString())}</button>`;
       shopContent.appendChild(row);
     });
     balEl.innerText = state.balance.toLocaleString();
@@ -136,19 +174,15 @@
 
   btn.onclick = (e) => {
     e.preventDefault();
-    
-    // ANTI-CHEAT LOGIC
-    clickCount++;
     const now = Date.now();
-    if (now - lastCheck >= 1000) {
-      if (clickCount > 45) { // Если больше 20 кликов в секунду
-        localStorage.clear();
-        document.getElementById('ban-screen').style.display = 'flex';
-        setTimeout(() => { window.location.href = "https://www.google.com"; }, 3000);
-        return;
-      }
-      clickCount = 0;
-      lastCheck = now;
+    clickTimes.push(now);
+    clickTimes = clickTimes.filter(t => t > now - 1000);
+
+    if (clickTimes.length > 18) {
+      localStorage.clear();
+      document.getElementById('ban-screen').style.display = 'flex';
+      setTimeout(() => { window.location.href = "https://www.google.com"; }, 2500);
+      return;
     }
 
     play();
