@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Жалобы модерации | Discord Webhook</title>
+    <title>Жалоба модерации | Авто-пинг всех ролей</title>
     <style>
         * {
             margin: 0;
@@ -12,8 +12,8 @@
         }
 
         body {
-            background: linear-gradient(135deg, #0f0f1a 0%, #161a2b 100%);
-            font-family: 'Segoe UI', 'Inter', system-ui, 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0a0c15 0%, #14182b 100%);
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -21,15 +21,14 @@
             padding: 2rem 1.5rem;
         }
 
-        /* Стиль — тёмный, но в красноватых акцентах для жалоб */
         .glass-card {
-            background: rgba(25, 28, 40, 0.85);
+            background: rgba(22, 26, 40, 0.92);
             backdrop-filter: blur(14px);
             border-radius: 2rem;
-            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 85, 85, 0.15);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(237, 66, 69, 0.25);
             max-width: 760px;
             width: 100%;
-            padding: 2rem 2rem 2.5rem;
+            padding: 2rem;
             transition: all 0.3s ease;
         }
 
@@ -39,18 +38,13 @@
             }
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
         .badge {
             background: #ed4245;
             display: inline-block;
             padding: 0.3rem 1.2rem;
             border-radius: 60px;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 800;
             letter-spacing: 0.5px;
             color: white;
             text-transform: uppercase;
@@ -71,9 +65,9 @@
         .sub {
             color: #b9bfdf;
             font-size: 0.85rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: inline-block;
-            padding-top: 0.5rem;
+            border-left: 3px solid #ed4245;
+            padding-left: 0.8rem;
+            margin-bottom: 1.8rem;
         }
 
         .form-group {
@@ -92,12 +86,12 @@
             gap: 0.5rem;
         }
 
-        label i {
-            font-style: normal;
-            font-weight: 700;
+        label .required-star {
+            color: #ed4245;
+            font-size: 1rem;
         }
 
-        input, textarea, select {
+        input, textarea {
             background: #10131f;
             border: 1.5px solid #2c314a;
             border-radius: 1rem;
@@ -110,7 +104,7 @@
             resize: vertical;
         }
 
-        input:focus, textarea:focus, select:focus {
+        input:focus, textarea:focus {
             border-color: #ed4245;
             box-shadow: 0 0 0 3px rgba(237, 66, 69, 0.25);
             background: #181e30;
@@ -120,7 +114,47 @@
             min-height: 90px;
         }
 
-        /* Чекбокс согласия */
+        /* Блок с автоматическим пингом (информация) */
+        .auto-ping-info {
+            background: linear-gradient(135deg, #1e1a2a, #151928);
+            border: 1px solid #ed4245;
+            border-radius: 1rem;
+            padding: 0.9rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .ping-icon {
+            font-size: 1.8rem;
+        }
+
+        .ping-text {
+            flex: 1;
+        }
+
+        .ping-text strong {
+            color: #ed4245;
+        }
+
+        .ping-roles-list {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 0.3rem;
+        }
+
+        .role-tag {
+            background: #2c2a44;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #ffb7b7;
+        }
+
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -130,16 +164,13 @@
             border-radius: 1rem;
             border: 1.5px solid #2c314a;
             margin-top: 0.5rem;
-            flex-wrap: wrap;
         }
 
         .checkbox-group input {
-            width: 1.3rem;
-            height: 1.3rem;
+            width: 1.2rem;
+            height: 1.2rem;
             accent-color: #ed4245;
             margin: 0;
-            padding: 0;
-            transform: scale(1);
             cursor: pointer;
         }
 
@@ -147,7 +178,6 @@
             margin-bottom: 0;
             cursor: pointer;
             font-weight: 500;
-            color: #e2e6ff;
         }
 
         button {
@@ -166,13 +196,13 @@
             justify-content: center;
             align-items: center;
             gap: 0.6rem;
-            box-shadow: 0 8px 18px rgba(237, 66, 69, 0.25);
+            box-shadow: 0 8px 18px rgba(237, 66, 69, 0.3);
         }
 
         button:hover {
             transform: translateY(-2px);
             background: linear-gradient(95deg, #ff5a5d, #ed4245);
-            box-shadow: 0 12px 24px rgba(237, 66, 69, 0.4);
+            box-shadow: 0 12px 24px rgba(237, 66, 69, 0.5);
         }
 
         button:active {
@@ -181,7 +211,7 @@
 
         .toast-msg {
             visibility: hidden;
-            min-width: 250px;
+            min-width: 260px;
             background-color: #1a1e2ce6;
             backdrop-filter: blur(12px);
             color: #fff;
@@ -195,7 +225,7 @@
             font-size: 0.9rem;
             font-weight: 500;
             z-index: 1000;
-            border-left: 4px solid #ed4245;
+            border-left: 4px solid #23a55a;
             box-shadow: 0 12px 20px rgba(0,0,0,0.4);
             transition: visibility 0.2s, opacity 0.2s;
             opacity: 0;
@@ -208,29 +238,26 @@
             opacity: 1;
         }
 
-        .toast-msg.success {
-            border-left-color: #23a55a;
+        .toast-msg.error {
+            border-left-color: #ed4245;
         }
 
         hr {
             border: none;
             height: 1px;
             background: linear-gradient(to right, transparent, #2c314a, transparent);
-            margin: 0.5rem 0 1.2rem;
+            margin: 0.8rem 0 1rem;
         }
 
         footer {
             text-align: center;
             font-size: 0.7rem;
             color: #5f6b97;
-            margin-top: 1.8rem;
+            margin-top: 1.5rem;
         }
-        .required-star {
-            color: #ed4245;
-            font-size: 0.9rem;
-        }
+
         .warning-note {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #aaadcc;
             margin-top: 0.3rem;
         }
@@ -242,38 +269,52 @@
     <div class="header">
         <div class="badge">⚠️ ЖАЛОБЫ И НАРУШЕНИЯ</div>
         <h1>📢 Форма жалобы</h1>
-        <div class="sub">Сообщите модерации о нарушении правил &nbsp;•&nbsp; Анонимно или открыто</div>
+        <div class="sub">Автоматическое уведомление всех модераторов</div>
+    </div>
+
+    <!-- Информация об авто-пинге -->
+    <div class="auto-ping-info">
+        <div class="ping-icon">🔔</div>
+        <div class="ping-text">
+            <strong>Автоматический пинг ролей</strong><br>
+            При отправке жалобы <strong>всегда будут отмечены</strong> следующие роли:
+            <div class="ping-roles-list">
+                <span class="role-tag">🟢 JuniperBot</span>
+                <span class="role-tag">🔴 СОЗДАТЕЛЬ</span>
+                <span class="role-tag">🟡 ЗАМ</span>
+            </div>
+        </div>
     </div>
 
     <form id="complaintForm">
         <!-- 1. Ваш ник -->
         <div class="form-group">
-            <label><i>🕵️</i> 1. Ваш ник <span class="required-star">*</span></label>
-            <input type="text" id="complainantNick" name="complainantNick" placeholder="Ваш Discord / игровой никнейм" required>
+            <label>1. Ваш ник <span class="required-star">*</span></label>
+            <input type="text" id="complainantNick" placeholder="Ваш Discord / игровой никнейм" required>
         </div>
 
         <!-- 2. Ник нарушителя -->
         <div class="form-group">
-            <label><i>⚠️</i> 2. Ник нарушителя <span class="required-star">*</span></label>
-            <input type="text" id="violatorNick" name="violatorNick" placeholder="Никнейм пользователя, нарушившего правила" required>
+            <label>2. Ник нарушителя <span class="required-star">*</span></label>
+            <input type="text" id="violatorNick" placeholder="Никнейм пользователя, нарушившего правила" required>
         </div>
 
         <!-- 3. Причина нарушения -->
         <div class="form-group">
-            <label><i>📌</i> 3. Причина нарушения <span class="required-star">*</span></label>
-            <textarea id="violationReason" name="violationReason" placeholder="Опишите, что именно произошло: оскорбления, флуд, реклама, читы, угрозы и т.д." rows="3" required></textarea>
+            <label>3. Причина нарушения <span class="required-star">*</span></label>
+            <textarea id="violationReason" placeholder="Опишите, что именно произошло: оскорбления, флуд, реклама, читы, угрозы и т.д." rows="3" required></textarea>
         </div>
 
-        <!-- 4. Доказательства (ссылка на сообщение или видео) -->
+        <!-- 4. Доказательства (ссылка) -->
         <div class="form-group">
-            <label><i>🔗</i> 4. Доказательства (ссылка на сообщение или видео) <span class="required-star">*</span></label>
-            <input type="url" id="evidence" name="evidence" placeholder="https://discord.com/channels/... / https://imgur.com/... / ссылка на скриншот или видео" required>
+            <label>4. Доказательства (ссылка на сообщение или видео) <span class="required-star">*</span></label>
+            <input type="url" id="evidence" placeholder="https://discord.com/channels/... / https://imgur.com/... / ссылка на скриншот" required>
             <div class="warning-note">📎 Скриншоты, ссылки на дискорд сообщения, видео-доказательства помогут быстрее разобраться.</div>
         </div>
 
-        <!-- 5. Согласие (обязательное) -->
+        <!-- 5. Согласие (только на достоверность) -->
         <div class="form-group">
-            <label><i>✅</i> 5. Согласие <span class="required-star">*</span></label>
+            <label>5. Согласие <span class="required-star">*</span></label>
             <div class="checkbox-group">
                 <input type="checkbox" id="consentCheckbox" required>
                 <label for="consentCheckbox">Я подтверждаю, что предоставленная информация достоверна и я несу ответственность за ложные жалобы.</label>
@@ -282,11 +323,11 @@
 
         <hr>
         <button type="submit" id="submitComplaintBtn">
-            🚨 Отправить жалобу в Discord
+            🚨 Отправить жалобу (с пингом всех ролей)
         </button>
     </form>
     <footer>
-        Все жалобы рассматриваются модерацией конфиденциально.
+        🔔 После отправки модераторы получат уведомление • Жалоба будет рассмотрена
     </footer>
 </div>
 
@@ -294,8 +335,17 @@
 
 <script>
     (function() {
-        // ТОТ ЖЕ САМЫЙ ВЕБХУК, что и для заявок
+        // ТОТ ЖЕ САМЫЙ ВЕБХУК
         const WEBHOOK_URL = "https://discord.com/api/webhooks/1500027809047908392/Fz8EMr7v8F-JrRVOPQNPnHOq_ZUeb9-VIsX5d6MV_u9IH2v3dYRmER80yft93LqEdqfW";
+        
+        // ⚠️ ВАЖНО: Замените эти ID на реальные ID ролей с вашего Discord-сервера!!!
+        // Как получить ID: Настройки Discord → Дополнительно → Режим разработчика (включить)
+        // Затем ПКМ по роли в списке ролей сервера → "Копировать ID"
+        const ROLE_IDS = {
+            "🟢 JuniperBot": "1500024123957710848",   // 👈 СЮДА ВСТАВИТЬ ЦИФРОВОЙ ID
+            "🔴 СОЗДАТЕЛЬ": "1500019319227158699",       // 👈 СЮДА ВСТАВИТЬ ЦИФРОВОЙ ID
+            "🟡 ЗАМ": "1500019872766365827"               // 👈 СЮДА ВСТАВИТЬ ЦИФРОВОЙ ID
+        };
         
         // DOM элементы
         const form = document.getElementById('complaintForm');
@@ -309,17 +359,12 @@
         const evidenceInput = document.getElementById('evidence');
         const consentCheck = document.getElementById('consentCheckbox');
         
-        function showNotification(message, isError = false, isSuccess = false) {
+        function showNotification(message, isError = false) {
             toast.textContent = message;
-            toast.classList.remove('error', 'success');
             if (isError) {
                 toast.classList.add('error');
-                toast.style.borderLeftColor = "#ed4245";
-            } else if (isSuccess) {
-                toast.classList.add('success');
-                toast.style.borderLeftColor = "#23a55a";
             } else {
-                toast.style.borderLeftColor = "#ed4245";
+                toast.classList.remove('error');
             }
             toast.classList.add('show');
             setTimeout(() => {
@@ -327,7 +372,7 @@
             }, 3800);
         }
         
-        // экранирование markdown
+        // Экранирование Markdown
         function escapeMarkdown(text) {
             if (!text) return "";
             return text.replace(/([`*_~|\\])/g, '\\$1')
@@ -339,7 +384,29 @@
             return text.substring(0, maxLength - 3) + "...";
         }
         
-        // Валидация
+        // Функция для получения строки с упоминанием всех трёх ролей (без выбора)
+        function getAllRolesMention() {
+            const roleMentions = [];
+            const roleNames = ["🟢 JuniperBot", "🔴 СОЗДАТЕЛЬ", "🟡 ЗАМ"];
+            
+            for (const roleName of roleNames) {
+                const roleId = ROLE_IDS[roleName];
+                // Проверяем, что ID не является заглушкой и выглядит как число
+                if (roleId && roleId !== "ID_РОЛИ_JUNIPERBOT" && roleId !== "ID_РОЛИ_CREATOR" && roleId !== "ID_РОЛИ_DEPUTY" && /^\d+$/.test(roleId)) {
+                    roleMentions.push(`<@&${roleId}>`);
+                } else {
+                    // Если ID не задан — пишем текст (чтобы не ломать отправку)
+                    roleMentions.push(`**${roleName}** (ID не настроен)`);
+                }
+            }
+            
+            if (roleMentions.length === 0) {
+                return "⚠️ Роли не настроены — обратитесь к администратору";
+            }
+            return `🔔 **ВНИМАНИЕ! НОВАЯ ЖАЛОБА**\nУведомление для модерации: ${roleMentions.join(" ")}`;
+        }
+        
+        // Валидация формы
         function validateComplaint() {
             const complainant = complainantNick.value.trim();
             if (complainant === "") {
@@ -380,18 +447,14 @@
                 evidenceInput.focus();
                 return false;
             }
-            // простая проверка, что похоже на URL
-            if (!evidence.match(/^https?:\/\//i) && !evidence.includes(".")) {
-                // допустим ссылки могут быть и без http, но лучше предупредить
-                if (!evidence.startsWith("http")) {
-                    showNotification("⚠️ Введите корректную ссылку (начинающуюся с http:// или https://)", true);
-                    evidenceInput.focus();
-                    return false;
-                }
+            if (!evidence.match(/^https?:\/\//i)) {
+                showNotification("⚠️ Введите корректную ссылку (начинающуюся с http:// или https://)", true);
+                evidenceInput.focus();
+                return false;
             }
             
             if (!consentCheck.checked) {
-                showNotification("⚠️ Вы должны подтвердить согласие на достоверность жалобы", true);
+                showNotification("⚠️ Вы должны подтвердить достоверность жалобы", true);
                 consentCheck.focus();
                 return false;
             }
@@ -404,15 +467,16 @@
             };
         }
         
-        // Отправка в Discord (тот же вебхук, другой embed)
+        // Отправка в Discord
         async function sendComplaintToDiscord(data) {
-            // создаём embed для жалобы - яркий, красноватый оттенок
+            const mentionContent = getAllRolesMention();
+            
             const embed = {
                 title: "🚨 НОВАЯ ЖАЛОБА НА НАРУШЕНИЕ",
-                color: 0xed4245,  // red discord style
+                color: 0xed4245,
                 timestamp: new Date().toISOString(),
                 footer: {
-                    text: "Система жалоб • Модерация рассмотрит в ближайшее время",
+                    text: "Автоматический пинг ролей • Требуется проверка",
                     icon_url: "https://cdn.discordapp.com/emojis/864449024290979890.png"
                 },
                 fields: [
@@ -442,16 +506,12 @@
                 }
             };
             
-            // иногда ссылка может быть длинной, но discord сам обработает в embed
             const payload = {
-                username: "📡 Жалобы Модерации",
+                username: "📢 Жалобы | Авто-пинг",
                 avatar_url: "https://cdn-icons-png.flaticon.com/512/190/190411.png",
-                embeds: [embed],
-                content: "<@&role_id> **Внимание! Поступила новая жалоба.**" 
-                // роль можно убрать или оставить как текст; но чтобы не пингануть роль без id, просто текст
+                content: mentionContent,
+                embeds: [embed]
             };
-            // Убираем content, если не хотим пинговать (оставим как информационный)
-            payload.content = "🔔 **Новое обращение в модерацию**";
             
             try {
                 const response = await fetch(WEBHOOK_URL, {
@@ -459,6 +519,7 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
+                
                 if (response.ok) {
                     return { success: true };
                 } else {
@@ -466,7 +527,9 @@
                     try {
                         errorBody = await response.json();
                         errorBody = JSON.stringify(errorBody);
-                    } catch(e) { errorBody = await response.text(); }
+                    } catch(e) { 
+                        errorBody = await response.text(); 
+                    }
                     console.error("Ошибка вебхука:", response.status, errorBody);
                     return { success: false, error: `Код ${response.status}: ${errorBody.substring(0, 120)}` };
                 }
@@ -481,7 +544,7 @@
             if (loading) {
                 submitBtn.disabled = true;
                 submitBtn.style.opacity = "0.7";
-                submitBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 0 0 20"/></svg> Отправка жалобы...`;
+                submitBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 0 0 20"/></svg> Отправка жалобы...`;
                 if (!document.querySelector('#spinnerKeyframes')) {
                     const style = document.createElement('style');
                     style.id = 'spinnerKeyframes';
@@ -491,11 +554,11 @@
             } else {
                 submitBtn.disabled = false;
                 submitBtn.style.opacity = "1";
-                submitBtn.innerHTML = `🚨 Отправить жалобу в Discord`;
+                submitBtn.innerHTML = `🚨 Отправить жалобу (с пингом всех ролей)`;
             }
         }
         
-        // Обработка отправки формы
+        // Обработка отправки
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -512,16 +575,9 @@
             });
             
             if (result.success) {
-                showNotification("✅ Жалоба отправлена! Модерация проверит её в ближайшее время.", false, true);
+                showNotification("✅ Жалоба отправлена! Модераторы получили уведомление.");
                 form.reset();
-                // сбросить чекбокс вручную (reset не сработает полностью из-за особенностей)
                 consentCheck.checked = false;
-                // опционально чистим поля, но reset уже работает нативной сброс
-                // дополнительно убеждаемся, что значения чистые
-                complainantNick.value = '';
-                violatorNick.value = '';
-                violationReason.value = '';
-                evidenceInput.value = '';
             } else {
                 let errMsg = result.error || "Неизвестная ошибка вебхука";
                 showNotification(`❌ Ошибка отправки: ${errMsg.substring(0, 140)}`, true);
@@ -530,19 +586,16 @@
             setLoading(false);
         });
         
-        // небольшая дополнительная валидация при потере фокуса (для ссылок)
+        // Валидация ссылки
         evidenceInput.addEventListener('blur', () => {
             let val = evidenceInput.value.trim();
-            if (val !== "" && !val.match(/^https?:\/\//i)) {
-                // не блокируем, просто предупреждение, но не ошибка критическая
-                if (!val.startsWith("http")) {
-                    showNotification("💡 Убедитесь, что ссылка начинается с http:// или https://", true);
-                    setTimeout(() => toast.classList.remove('show'), 2000);
-                }
+            if (val !== "" && !val.match(/^https?:\/\//i) && val.length > 0) {
+                showNotification("💡 Убедитесь, что ссылка начинается с http:// или https://", true);
+                setTimeout(() => toast.classList.remove('show'), 2000);
             }
         });
         
-        console.log("Форма жалоб готова. Вебхук тот же самый. Discord будет принимать обращения.");
+        console.log("Форма жалоб готова. Все три роли будут отмечены автоматически!");
     })();
 </script>
 </body>
